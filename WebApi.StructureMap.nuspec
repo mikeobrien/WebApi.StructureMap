@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+   <metadata>
+      <id>WebApi.StructureMap</id>
+      <version>0.0.0.0</version>
+      <title>Web API StructureMap Integration</title>
+      <authors>Mike O'Brien</authors>
+      <description>Integrates StructureMap with Web API.</description>
+      <releaseNotes />
+      <copyright />
+      <language>en-US</language>
+      <licenseUrl>https://github.com/mikeobrien/WebApi.StructureMap/blob/master/LICENSE</licenseUrl>
+      <projectUrl>https://github.com/mikeobrien/WebApi.StructureMap</projectUrl>
+      <owners>Mike O'Brien</owners>
+      <summary>Integrates StructureMap with Web API.</summary>
+      <iconUrl>https://github.com/mikeobrien/WebApi.StructureMap/raw/master/misc/logo.png</iconUrl>
+      <tags>webapi structuremap</tags>
+      <dependencies>
+         <dependency id="Microsoft.AspNet.WebApi" version="5.2.0" />
+         <dependency id="structuremap" version="4.1.0" />
+      </dependencies>
+   </metadata>
+</package>

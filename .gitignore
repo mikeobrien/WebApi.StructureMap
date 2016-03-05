@@ -1,0 +1,20 @@
+obj
+bin
+_ReSharper.*
+*.user
+*.suo
+*.orig
+*.log
+*.bin
+*.swp
+*.dotCover
+aspnet_client
+*~
+.DS_Store
+.idea/
+Thumbs.db
+node_modules
+
+# Fubu bottle soruces
+src/*/fubu-content/*
+!src/*/fubu-content/*.zip

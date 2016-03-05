@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.Web.Administration</id>
+    <version>7.0.0.0</version>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <projectUrl>http://microsoft.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>The Microsoft.Web.Administration namespace contains classes that a developer can use to administer IIS Manager. With the classes in this namespace, an administrator can read and write configuration information to ApplicationHost.config, Web.config, and Administration.config files.
+see: http://blogs.msdn.com/b/carlosag/archive/2006/04/17/microsoftwebadministration.aspx</description>
+    <releaseNotes />
+    <tags>IIS</tags>
+  </metadata>
+</package>
