@@ -22,18 +22,19 @@ gulp.task('assemblyInfo', function() {
         .pipe(gulp.dest('.'));
 });
 
-gulp.task('build', ['assemblyInfo'], function() {
+var build = function(config) {
     return gulp
         .src('src/*.sln')
         .pipe(msbuild({
+            configuration: config,
             toolsVersion: 14.0,
             targets: ['Clean', 'Build'],
             errorOnFail: true,
             stdout: true
         }));
-});
+};
 
-gulp.task('test', ['build'], function () {
+var test = function() {
     return gulp
         .src(['**/bin/**/*Tests.dll'], { read: false })
         .pipe(nunit({
@@ -43,13 +44,34 @@ gulp.task('test', ['build'], function () {
                 framework: 'net-4.5'
             }
         }));
+};
+
+var copyFiles = function(folder) {
+    return gulp.src('src/WebApi.StructureMap/bin/Release/WebApi.StructureMap.*')
+        .pipe(gulp.dest('package/lib/' + folder));
+};
+
+gulp.task('build-net452', ['assemblyInfo'], function() {
+    return build('Release-4.5.2');
 });
 
-gulp.task('nuget-package', ['test'], function() {
+gulp.task('test-net452', ['build-net452'], test);
 
-    gulp.src('src/WebApi.StructureMap/bin/Release/WebApi.StructureMap.*')
-        .pipe(gulp.dest('package/lib'));
+gulp.task('nuget-files-net452', ['test-net452'], function() {
+    return copyFiles('net452');
+});
 
+gulp.task('build-net462', ['nuget-files-net452'], function() {
+    return build('Release');
+});
+
+gulp.task('test-net462', ['build-net462'], test);
+
+gulp.task('nuget-files-net462', ['test-net462'], function() {
+    return copyFiles('net462');
+});
+
+gulp.task('nuget-package', ['nuget-files-net462'], function() {
     return Nuget()
         .pack({
             spec: 'WebApi.StructureMap.nuspec',
@@ -59,5 +81,8 @@ gulp.task('nuget-package', ['test'], function() {
 });
 
 gulp.task('nuget-push', ['nuget-package'], function() {
-    return Nuget({ apiKey: args.nugetApiKey }).push('*.nupkg');
+    return Nuget().push('*.nupkg', { 
+        apiKey: args.nugetApiKey, 
+        source: ['https://www.nuget.org/api/v2/package'] 
+    });
 });
