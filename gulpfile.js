@@ -22,34 +22,44 @@ gulp.task('assemblyInfo', function() {
         .pipe(gulp.dest('.'));
 });
 
-gulp.task('build', ['assemblyInfo'], function() {
-    return gulp
-        .src('src/*.sln')
-        .pipe(msbuild({
-            toolsVersion: 14.0,
-            targets: ['Clean', 'Build'],
-            errorOnFail: true,
-            stdout: true
-        }));
-});
+function target(framework, depends, config)
+{
+    gulp.task('build-' + framework, [depends], function() {
+        return gulp
+            .src('src/*.sln')
+            .pipe(msbuild({
+                configuration: config,
+                toolsVersion: 14.0,
+                targets: ['Clean', 'Build'],
+                errorOnFail: true,
+                stdout: true
+            }));
+    });
 
-gulp.task('test', ['build'], function () {
-    return gulp
-        .src(['**/bin/**/*Tests.dll'], { read: false })
-        .pipe(nunit({
-            executable: 'nunit3-console.exe',
-            teamcity: true,
-            options: {
-                framework: 'net-4.5'
-            }
-        }));
-});
+    gulp.task('test-' + framework, ['build-' + framework], function() {
+        return gulp
+            .src(['**/bin/**/*Tests.dll'], { read: false })
+            .pipe(nunit({
+                executable: 'nunit3-console.exe',
+                teamcity: true,
+                options: {
+                    framework: 'net-4.5'
+                }
+            }));
+    });
 
-gulp.task('nuget-package', ['test'], function() {
+    gulp.task('nuget-files-' + framework, ['test-' + framework], function() {
+        return gulp.src('src/WebApi.StructureMap/bin/Release/WebApi.StructureMap.*')
+            .pipe(gulp.dest('package/lib/' + framework));
+    }); 
 
-    gulp.src('src/WebApi.StructureMap/bin/Release/WebApi.StructureMap.*')
-        .pipe(gulp.dest('package/lib'));
+    gulp.task(framework, ['nuget-files-' + framework]); 
+}
 
+target('net452', 'assemblyInfo', 'Release-4.5.2');
+target('net462', 'net452', 'Release');
+
+gulp.task('nuget-package', ['net462'], function() {
     return Nuget()
         .pack({
             spec: 'WebApi.StructureMap.nuspec',
@@ -59,5 +69,8 @@ gulp.task('nuget-package', ['test'], function() {
 });
 
 gulp.task('nuget-push', ['nuget-package'], function() {
-    return Nuget({ apiKey: args.nugetApiKey }).push('*.nupkg');
+    return Nuget().push('*.nupkg', { 
+        apiKey: args.nugetApiKey, 
+        source: ['https://www.nuget.org/api/v2/package'] 
+    });
 });
