@@ -11,21 +11,6 @@ namespace Tests
     [TestFixture]
     public class AcceptanceTests
     {
-        private Website _website;
-
-        [TestFixtureSetUp]
-        public void Setup()
-        {
-            _website = Website.Create(@"..\..\..\TestHarness");
-            _website.Start();
-        }
-
-        [TestFixtureTearDown]
-        public void TearDown()
-        {
-            _website.Stop();
-        }
-
         [Test]
         public void should_build_object_graph_and_dispose_nested_containers()
         {
@@ -34,7 +19,7 @@ namespace Tests
             client.Headers.Add("accept", "application/json");
             try
             {
-                var url = $"{_website.Url}test";
+                var url = IISBootstrap.BuildUrl("test");
                 var result = Deserialize.Json<TestController.Model>(
                     client.DownloadString(url));
 
@@ -52,7 +37,7 @@ namespace Tests
                 filterTransientInstance.ShouldEqual(transientInstance);
 
                 result = Deserialize.Json<TestController.Model>(
-                    client.DownloadString($"{_website.Url}test"));
+                    client.DownloadString(url));
                 result.SingletonInstance.ShouldEqual(singletonInstance);
                 result.SingletonWasDisposedLastTime.ShouldBeFalse();
                 result.TransientInstance.ShouldNotEqual(transientInstance);
