@@ -43,7 +43,8 @@ function target(framework, depends, config)
                 executable: 'nunit3-console.exe',
                 teamcity: true,
                 options: {
-                    framework: 'net-4.5'
+                    framework: 'net-4.5',
+                    result: 'TestResults.xml'
                 }
             }));
     });
