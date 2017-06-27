@@ -14,7 +14,7 @@ namespace WebApi.StructureMap
     public static class Extensions
     {
         public static void UseStructureMap(
-            this HttpConfiguration config, 
+            this HttpConfiguration config,
             Action<ConfigurationExpression> configuration)
         {
             config.DependencyResolver = new DependencyResolver(
@@ -42,6 +42,13 @@ namespace WebApi.StructureMap
             where T : Registry, new()
         {
             config.UseStructureMap(new T());
+        }
+
+        public static void UseStructureMap(
+                this HttpConfiguration config,
+                IContainer container)
+        {
+            config.DependencyResolver = new DependencyResolver(container);
         }
 
         public static T GetService<T>(this IDependencyScope scope)
