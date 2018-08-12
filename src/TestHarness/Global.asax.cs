@@ -8,7 +8,6 @@ namespace TestHarness
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            GlobalConfiguration.Configuration.Filters.Add(new TestFilter());
             GlobalConfiguration.Configuration.UseStructureMap<Registry>();
             GlobalConfiguration.Configuration.MapHttpAttributeRoutes();
             GlobalConfiguration.Configuration.EnsureInitialized();
