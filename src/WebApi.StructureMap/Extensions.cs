@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
@@ -63,29 +62,34 @@ namespace WebApi.StructureMap
 
         public static T GetService<T>(this HttpActionExecutedContext context)
         {
-            return context.Request.GetDependencyScope().GetService<T>(context,
-                context.ActionContext, context.Response);
+            var scope = context.Request.GetDependencyScope();
+            var container = scope.GetService<IContainer>();
+
+            var explicitArguments = new ExplicitArguments();
+            explicitArguments.SetWithActualType(context);
+            explicitArguments.SetWithActualType(context.ActionContext);
+            explicitArguments.SetWithActualType(context.Response);
+
+            return container.GetInstance<T>(explicitArguments);
         }
 
         public static T GetService<T>(this HttpActionContext context)
         {
-            return context.Request.GetDependencyScope().GetService<T>(context,
-                context.ActionDescriptor, context.ControllerContext,
-                context.ModelState);
-        }
-
-        private static T GetService<T>(this IDependencyScope scope,
-            params object[] arguments)
-        {
+            var scope = context.Request.GetDependencyScope();
             var container = scope.GetService<IContainer>();
+
             var explicitArguments = new ExplicitArguments();
-            arguments.ForEach(x => explicitArguments.Set(x.GetType(), x));
+            explicitArguments.SetWithActualType(context);
+            explicitArguments.SetWithActualType(context.ActionDescriptor);
+            explicitArguments.SetWithActualType(context.ControllerContext);
+            explicitArguments.SetWithActualType(context.ModelState);
+
             return container.GetInstance<T>(explicitArguments);
         }
 
-        private static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
+        private static void SetWithActualType<T>(this ExplicitArguments explicitArguments, T instance)
         {
-            foreach (var item in source) action(item);
+            explicitArguments.Set(instance == null ? typeof(T) : instance.GetType(), instance);
         }
     }
 }

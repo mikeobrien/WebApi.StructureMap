@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using WebApi.StructureMap;
@@ -15,6 +16,16 @@ namespace TestHarness
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             actionExecutedContext.GetService<HeaderService>().SetHeaders();
+        }
+    }
+
+    public class ExceptionFilter : ActionFilterAttribute
+    {
+        public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
+        {
+            var service = actionExecutedContext.GetService<ResponseInspectorService>();
+            actionExecutedContext.Response = new HttpResponseMessage(HttpStatusCode.OK);
+            actionExecutedContext.Response.Headers.Add("ResponseStatus", service.InspectResponse());
         }
     }
 
@@ -50,6 +61,22 @@ namespace TestHarness
                 _singletonDependency.GetHashCode().ToString());
             _response.Headers.Add("TransientInstance",
                 _transientDependency.GetHashCode().ToString());
+        }
+    }
+
+    public class ResponseInspectorService
+    {
+        private readonly HttpResponseMessage _response;
+
+        public ResponseInspectorService(
+            HttpResponseMessage response)
+        {
+            _response = response;
+        }
+
+        public string InspectResponse()
+        {
+            return _response == null ? "NoResponse" : "ResponsePresent";
         }
     }
 }

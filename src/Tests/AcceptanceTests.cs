@@ -55,5 +55,19 @@ namespace Tests
                 throw;
             }
         }
+
+        [Test]
+        public void should_retrieve_depedency_from_http_context_when_no_reponse_present()
+        {
+            var client = new WebClient();
+            client.Headers.Add("content-type", "application/json");
+            client.Headers.Add("accept", "application/json");
+
+            var url = IISBootstrap.BuildUrl("test2");
+            var result = client.DownloadString(url);
+
+            result.ShouldBeEmpty();
+            client.ResponseHeaders["ResponseStatus"].ShouldEqual("NoResponse");
+        }
     }
 }

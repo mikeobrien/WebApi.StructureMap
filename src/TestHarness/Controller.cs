@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Web.Http;
 
 namespace TestHarness
@@ -29,6 +30,7 @@ namespace TestHarness
         }
 
         [Route("test")]
+        [TestFilter]
         public IHttpActionResult Get()
         {
             return Ok(new Model
@@ -39,6 +41,13 @@ namespace TestHarness
                 SingletonWasDisposedLastTime = _singletonDependency.WasDisposedLastTime,
                 RequestUrl = _request.RequestUri.ToString()
             });
+        }
+
+        [Route("test2")]
+        [ExceptionFilter]
+        public void Get2()
+        {
+            throw new Exception();
         }
     }
 }
