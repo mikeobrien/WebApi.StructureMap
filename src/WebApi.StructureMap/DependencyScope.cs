@@ -17,6 +17,16 @@ namespace WebApi.StructureMap
 
         public object GetService(Type serviceType)
         {
+            if (serviceType == null)
+            {
+                return null;
+            }
+
+            if (serviceType.IsAbstract || serviceType.IsInterface)
+            {
+                return _container.TryGetInstance(serviceType);
+            }
+
             return _container.GetInstance(serviceType);
         }
 
